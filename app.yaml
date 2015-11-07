@@ -1,0 +1,27 @@
+application: sickingd-xmas-2014
+version: 2
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+handlers:
+- url: /stylesheets
+  static_dir: stylesheets
+  
+- url: /scripts
+  static_dir: scripts
+
+- url: /stylesheets/images
+  static_dir: stylesheets/images
+
+- url: /.*
+  script: ChristmasNames.application
+
+- url: /images
+  static_dir: images
+  
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
