@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+
+{% autoescape true %}
+<html>
+  <body>
+  <div id="header">
+  <h1>Welcome to the Christmas name selection site!</h1>
+  </div>
+<!--
+  <h2>Enter your name to see who you picked:</h2>
+
+  <form action="/find" method="post">
+    <input name="find_name">
+    <input type="submit" value="Find Names">
+  </form>
+
+    {% if find_a_name %}
+        {% if found_names %}
+            <h3>Here are your names:</h3>
+            {% for found_name in found_names %}
+                You picked {{ found_name.assigned_name }} for the {{ found_name.family }} family Christmas
+            <br>
+            {% endfor %}
+        {% else %}
+           <h3>No names found. :-(</h3>
+        {% endif %}
+    {% endif %}
+  
+    <br>
+    {% if all_names %}
+       <table style="width:100%">   
+       <caption>All names</caption>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Family</th>
+                <th>Excluded Name</th>
+                <th>Is Assigned</th>
+            </tr>
+       {% for next_name in all_names %}
+            <tr>
+                <td>{{ next_name.name }}</td>
+                <td>{{ next_name.email }}</td>
+                <td>{{ next_name.family }}</td>
+                <td>{{ next_name.exclude }}</td>
+                <td>{{ next_name.is_assigned }}</td>
+            </tr>
+      {% endfor %}
+      </table>
+    {% else %}
+       <h3>No names have been found. </h3>
+    {% endif %}
+    
+  <br>
+  <h2> Add A New Name </h2>
+  <form action="/add_name" method="post">
+	Name:
+	<input type="text" name="name">
+	<br>
+	Email:
+	<input type="text" name="email">
+	<br>
+	Family:
+	<input type="text" name="family">
+    <br>
+	Exclude:
+	<input type="text" name="single_exclude">
+	<input type="submit" value="Add">
+  </form>
+
+
+  {% if name_added %}
+    <h3>{{ added_name }} added successfully </h3>
+  {% endif %}
+
+  <br>  
+
+
+  <h2> Assign Names </h2>
+
+  <form action="/assign" method="post">
+	Family Name:
+	<input type="text" name="family_assign">
+    <input type="submit" value="Assign Names">
+  </form>
+
+  {% if assigned_names %}
+   <h3>Names assigned successfully.</h3>
+  {% endif %}
+
+  <h2> Send Emails </h2>
+
+  <form action="/send_email" method="post">
+	Family Name:
+	<input type="text" name="email_family">
+    <input type="submit" value="Send">
+  </form>
+
+  {% if emails_sent %}
+   <h3>Emails sent successfully.</h3>
+  {% endif %}
+  
+  <h2> Email Person </h2>
+
+  <form action="/send_email_person" method="post">
+	Person Name:
+	<input type="text" name="email_person">
+    <input type="submit" value="Send">
+  </form>
+
+  {% if emails_person_sent %}
+   <h3>Email sent successfully.</h3>
+  {% endif %}  
+  
+  <br>
+  <form action="/send_list_emails" method="post">
+    <input type="submit" value="Send List Emails">
+  </form>  
+  
+  {% if list_emails_sent %}
+   <h3>List emails sent:</h3><br>
+   {{ all_list_email_messages }}
+  {% endif %}  
+-->
+  </body>
+</html>
+{% endautoescape %}

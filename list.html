@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+
+<script>
+function setbg(color)
+{
+document.getElementById("styled").style.background=color
+}
+</script>
+
+{% autoescape true %}
+<html>
+  <body>
+
+    {% if found_person %}
+        <div id="header">
+        <h1>Christmas Lists for {{ person.name }}</h1>
+        </div>
+
+        <div id="list">
+        Your list:
+        <form action="/list?id={{ person.key.id() }}" method="post">
+          <textarea name="person_list" id="listbox">{{ person.list }}</textarea><br>
+          <input id="savebutton" type="submit" value="Save Changes">
+        </form>
+        </div>
+
+        <br>
+        <br>
+        {% for assigned_person in assigned_people %}
+            <div id="list">
+            {{ assigned_person.name }}'s list for the {{ assigned_person.family }} family gift exchange:<br>
+            <textarea id="listbox" disabled name="assigned_list">{{ assigned_person.list }}</textarea>
+            </div>
+            <br>
+        {% endfor %}        
+        
+	{% else %}
+        No name found
+	{% endif %}    
+    
+  </body>
+</html>
+{% endautoescape %}
