@@ -10,7 +10,8 @@
   <div id="header">
   <h1>Welcome to the Christmas name selection site!</h1>
   </div>
-<!--
+
+
   <h2>Enter your name to see who you picked:</h2>
 
   <form action="/find" method="post">
@@ -40,7 +41,9 @@
                 <th>Family</th>
                 <th>Excluded Name</th>
                 <th>Is Assigned</th>
+				<th>Site</th>
             </tr>
+	   {% set count = 0 %}
        {% for next_name in all_names %}
             <tr>
                 <td>{{ next_name.name }}</td>
@@ -48,7 +51,9 @@
                 <td>{{ next_name.family }}</td>
                 <td>{{ next_name.exclude }}</td>
                 <td>{{ next_name.is_assigned }}</td>
+				<td><a href={{ sites[count] }}>{{ sites[count] }}</a></td>
             </tr>
+	      {% set count = count + 1 %}
       {% endfor %}
       </table>
     {% else %}
@@ -125,7 +130,7 @@
    <h3>List emails sent:</h3><br>
    {{ all_list_email_messages }}
   {% endif %}  
--->
+
   </body>
 </html>
 {% endautoescape %}

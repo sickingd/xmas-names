@@ -26,7 +26,8 @@ class DisplayLists(webapp2.RequestHandler):
             person_id = ChristmasNames.Person.get_by_id(int(self.request.get('id')))
             people = ChristmasNames.Person.query(ChristmasNames.Person.name == person_id.name).fetch(1000)
             for person in people:
-                assigned_people.append(person.assigned_name_key.get())
+                if person.assigned_name_key is not None:
+                    assigned_people.append(person.assigned_name_key.get())
             found = True
         template_values = {
             'person': person_id,
