@@ -2,19 +2,22 @@
 
 <head>
     <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/cupertino/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>    
 </head>
 
+
 <script>
-function setbg(color)
-{
-document.getElementById("styled").style.background=color
-}
+$(document).on('click', '.toggle-button', function() {
+    $(this).toggleClass('toggle-button-selected'); 
+});
 </script>
 
 {% autoescape true %}
 <html>
   <body>
-
+  
     {% if found_person %}
         <div id="header">
         <h1>Christmas Lists for {{ person.name }}</h1>
@@ -23,8 +26,16 @@ document.getElementById("styled").style.background=color
         <div id="list">
         Your list:
         <form action="/list?id={{ person.key.id() }}" method="post">
-          <textarea name="person_list" id="listbox">{{ person.list }}</textarea><br>
-          <input id="savebutton" type="submit" value="Save Changes">
+		  <table style="width:50%">   
+		   {% for next_item in person.items %}
+				<tr>
+					<td>{{ next_item.description }}</td>
+                    <td><a href={{ next_item.link }}>Link</a></td>
+					<td><button name="edit" type="submit" value="edit_item">Edit</button></td>
+				</tr>
+		  {% endfor %}
+		  </table>
+          <input id="add_new_item" type="submit" value="Add New Item">
         </form>
         </div>
 
@@ -33,7 +44,20 @@ document.getElementById("styled").style.background=color
         {% for assigned_person in assigned_people %}
             <div id="list">
             {{ assigned_person.name }}'s list for the {{ assigned_person.family }} family gift exchange:<br>
-            <textarea id="listbox" disabled name="assigned_list">{{ assigned_person.list }}</textarea>
+			<table style="width:50%">   
+				<tr>
+					<th>Item</th>
+					<th> </th>
+					<th>Fulfilled</th>
+				</tr>			
+			   {% for next_assigned_item in assigned_person.items %}
+				<tr>
+					<td>{{ next_assigned_item.description }}</td>
+					<td><a href={{ next_assigned_item.link }}>Link</a></td>
+					<td><div class="toggle-button"><button></button></div>
+				</tr>
+			  {% endfor %}
+		    </table>
             </div>
             <br>
         {% endfor %}        
