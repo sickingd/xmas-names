@@ -30,6 +30,7 @@ class Person(ndb.Model):
     assigned_name = ndb.StringProperty()
     list = ndb.TextProperty()    
     list_updated = ndb.BooleanProperty()
+    is_admin = ndb.BooleanProperty()
 
 def emailPerson(person):    
     name = person.name
@@ -168,8 +169,15 @@ class MainPage(webapp2.RequestHandler):
 
     def get(self):
         all_names = Person.query().fetch(1000)
+        
+        #Find out the website for each person, display that in the list
+        sites = []
+        for name in all_names:
+            sites.append(self.request.url + """list?id=""" + str(name.key.id()))
+        
         template_values = {
             'all_names': all_names,
+            'sites': sites,
         }
 
         template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -212,8 +220,9 @@ class AddName(webapp2.RequestHandler):
         person.family = self.request.get('family')
         person.exclude = self.request.get('single_exclude')
         person.is_assigned = False        
+        person.is_admin = False   
         person.put()
-	
+
         all_names = Person.query().fetch(1000)            
         template_values = {
             'added_name': person.name,
