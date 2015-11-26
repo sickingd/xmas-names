@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 
+<html lang="en">
 <head>
-    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/cupertino/jquery-ui.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>    
+  <meta charset="utf-8">
+  <title>Christmas List</title>
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <script type="text/javascript" src="scripts/ChristmasList.js"></script>
+
+ 
+
 </head>
-
-
-<script>
-$(document).on('click', '.toggle-button', function() {
-    $(this).toggleClass('toggle-button-selected'); 
-});
-</script>
 
 {% autoescape true %}
 <html>
@@ -23,29 +24,29 @@ $(document).on('click', '.toggle-button', function() {
         <h1>Christmas Lists for {{ person.name }}</h1>
         </div>
 
-        <div id="list">
+        <div id="mylist" class="ui-widget">
         Your list:
-        <form action="/list?id={{ person.key.id() }}" method="post">
-		  <table style="width:50%">   
+
+		  <table style="width:50%" class="ui-widget ui-widget-content">   
 		   {% for next_item in person.items %}
-				<tr>
+				<tr id={{ next_item.id }}>
 					<td>{{ next_item.description }}</td>
                     <td><a href={{ next_item.link }}>Link</a></td>
-					<td><button name="edit" type="submit" value="edit_item">Edit</button></td>
+					<td><button id="edit-item">Edit</button></td>
 				</tr>
 		  {% endfor %}
 		  </table>
-          <input id="add_new_item" type="submit" value="Add New Item">
-        </form>
+          <button id="add-item">Add New Item</button>
+
         </div>
 
-        <br>
+ 
         <br>
         {% for assigned_person in assigned_people %}
-            <div id="list">
+            <div id="assigned_list" class="ui-widget">
             {{ assigned_person.name }}'s list for the {{ assigned_person.family }} family gift exchange:<br>
-			<table style="width:50%">   
-				<tr>
+			<table style="width:50%" class="ui-widget ui-widget-content">   
+				<tr class="ui-widget-header ">
 					<th>Item</th>
 					<th> </th>
 					<th>Fulfilled</th>
@@ -66,6 +67,33 @@ $(document).on('click', '.toggle-button', function() {
         No name found
 	{% endif %}    
     
+    <!-- Form for editing an existing item.  Only visible when Edit Item is selected -->
+    <div id="edit-form" title="Edit Item">
+      <form>
+        <fieldset>
+          <label for="edit-description">Description</label>
+          <input type="text" name="edit-description" id="edit-description" class="text ui-widget-content ui-corner-all">
+          <label for="edit-link">Link (Optional)</label>
+          <input type="text" name="edit-link" id="edit-link" class="text ui-widget-content ui-corner-all">
+          <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+      </form>
+    </div>
+
+    <!-- Form for creating a new item.  Only visible when Add New Item is selected -->
+    <div id="add-form" title="Add New Item">
+      <form>
+        <fieldset>
+          <label for="add-description">Description</label>
+          <input type="text" name="add-description" id="add-description" class="text ui-widget-content ui-corner-all">
+          <label for="add-link">Link (Optional)</label>
+          <input type="text" name="add-link" id="add-link" class="text ui-widget-content ui-corner-all">
+          <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
+        </fieldset>
+      </form>
+    </div>
+    
   </body>
 </html>
 {% endautoescape %}
+ 
