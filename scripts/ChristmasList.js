@@ -1,20 +1,36 @@
 $(function() {
+    $( document ).ready(function() {
+        //To correctly set the is_fulfilled toggle state, read elements with ID's set to True 
+        //and change the toggle class
+        $('*[id*="True"]').each(function() {
+            $(this).toggleClass("toggle-button-selected")
+        });
+    });
+    
     $(".toggle-button").click(function(){
         $(this).toggleClass("toggle-button-selected");
-        //$( "#target" ).submit();
-        
-        //Temp Code showing how to use AJAX to post without changing pages
+        var fulfilled;
+        if ($(this).attr("class") == "toggle-button toggle-button-selected") {
+            fulfilled = "True";
+        } else {
+            fulfilled = "False";
+        }
+        description = $(this).closest("tr").find('td:eq(0)').text();
+        person_name = document.getElementById('person-name').textContent;
+        assigned_person_name = $(this).closest('table').attr('id');
+       
         $.ajax({
-            url: $(this).attr("action"),
-            type: 'POST',
-            data: $(this).serialize(),
-            beforeSend: function() {
-                $("#message").html("sending...");
-            },
-            success: function(data) {
-                $("#message").hide();
-                $("#response").html(data);
-            }
+            type: "POST",
+            url: "/fulfilled",
+            dataType: 'json',
+            data: JSON.stringify({ "fulfilled": fulfilled,
+                                   "description": description,
+                                   "person_name": person_name,
+                                   "assigned_person_name": assigned_person_name})
+        })
+        .done(function( data ) { // check why I use done
+//            alert( "Vote Cast!!! Count is : " + data['story']['vote_count'] );
+//            $('.voteCount').text(data['story']['vote_count']);
         });
     });
     

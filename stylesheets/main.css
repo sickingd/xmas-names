@@ -43,6 +43,10 @@ th {
     font-weight: bold;
 }
 
+.hidden-div { 
+    display: none;
+}
+
 .toggle-button { 
 	background-color: white; 
 	margin: 5px 0; 
