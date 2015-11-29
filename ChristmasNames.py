@@ -269,4 +269,6 @@ application = webapp2.WSGIApplication([
     ('/list', ChristmasLists.DisplayLists),
     ('/generate_test_people', DebugTools.GenerateTestPeople),
     ('/fulfilled', ChristmasLists.Fulfilled),
-], debug=True)
+    ('/edit_item', ChristmasLists.EditItem),
+    ('/add_item', ChristmasLists.AddItem),
+    ('/delete_item', ChristmasLists.DeleteItem),], debug=True)

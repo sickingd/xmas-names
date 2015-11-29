@@ -15,7 +15,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
 
-
+   
     
 class DisplayLists(webapp2.RequestHandler):
 
@@ -75,8 +75,6 @@ class Fulfilled(webapp2.RequestHandler):
         fulfilled = data['fulfilled']
         description = data['description']
         assigned_person_name = data['assigned_person_name']
-        #logging.info(self.request.get('id'))
-        #person_id = ChristmasNames.Person.get_by_id(int(self.request.get('id')))
         assigned_people = ChristmasNames.Person.query(ChristmasNames.Person.name == assigned_person_name).fetch(1000)
         for person in assigned_people:
             for item in person.items:
@@ -84,7 +82,58 @@ class Fulfilled(webapp2.RequestHandler):
                     item.is_fulfilled = (fulfilled == "True")
                     logging.info("""Person """ + person.name + """ is changing description """ + description + """ to """ + fulfilled)
             person.put()
+            
+            
+class EditItem(webapp2.RequestHandler):
 
+    def post(self):
+        logging.info(self.request.body)
+        data = json.loads(self.request.body)
+        old_description = data['old_description']
+        new_description = data['new_description']
+        new_link = data['new_link']
+        person_name = data['person_name']
+        people = ChristmasNames.Person.query(ChristmasNames.Person.name == person_name).fetch(1000)
+        for person in people:
+            for item in person.items:
+                if item.description == old_description:
+                    item.description = new_description
+                    item.link = new_link
+                    logging.info("""Person """ + person.name + """ is changing """ + old_description + """ to """ + new_description + """ : """ + new_link)
+            person.put()       
+
+class AddItem(webapp2.RequestHandler):
+
+    def post(self):
+        logging.info(self.request.body)
+        data = json.loads(self.request.body)
+        new_description = data['new_description']
+        new_link = data['new_link']
+        person_name = data['person_name']
+        people = ChristmasNames.Person.query(ChristmasNames.Person.name == person_name).fetch(1000)
+        new_item = ChristmasNames.Item(description = new_description, link = new_link)
+        person_id = ""
+        for person in people:
+            person_id = str(person.key.id());
+            person.items.append(new_item)
+            logging.info("""Person """ + person.name + """ is adding """ + new_description + """ : """ + new_link)
+            person.put()              
+        
+
+class DeleteItem(webapp2.RequestHandler):
+
+    def post(self):
+        logging.info(self.request.body)
+        data = json.loads(self.request.body)
+        description = data['description']
+        person_name = data['person_name']
+        people = ChristmasNames.Person.query(ChristmasNames.Person.name == person_name).fetch(1000)
+        for person in people:
+            #This is called "list comprehension" and is a technique to remove all occurrences of an element in a list.
+            #Another way to do it is to call ".remove(index)" but that only removes the single occurrence.
+            person.items = [x for x in person.items if x.description != description]
+            logging.info("""Person """ + person.name + """ is removing """ + description)
+            person.put()                 
     
 def emailPerson(person):    
         

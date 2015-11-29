@@ -1,4 +1,6 @@
 $(function() {
+    var old_edit_description;
+    
     $( document ).ready(function() {
         //To correctly set the is_fulfilled toggle state, read elements with ID's set to True 
         //and change the toggle class
@@ -28,14 +30,11 @@ $(function() {
                                    "person_name": person_name,
                                    "assigned_person_name": assigned_person_name})
         })
-        .done(function( data ) { // check why I use done
-//            alert( "Vote Cast!!! Count is : " + data['story']['vote_count'] );
-//            $('.voteCount').text(data['story']['vote_count']);
-        });
     });
     
     $("button#edit-item").click(function(){
-        $( "#edit-description" ).val($(this).closest("tr").find('td:eq(0)').text());
+        old_edit_description = $(this).closest("tr").find('td:eq(0)').text();
+        $( "#edit-description" ).val(old_edit_description);
         $( "#edit-link" ).val($(this).closest("tr").find('td:eq(1)').find("a").attr("href"));
         $( "#edit-form" ).dialog( "open" );
     });
@@ -47,13 +46,59 @@ $(function() {
     });
       
     function saveItem() {
-      var valid = true;
-      return valid;
+        //alert("New Description is: " + $( "#edit-description" ).val() + " and link is: " + $( "#edit-link" ).val());
+
+        data = JSON.stringify({ "person_name": document.getElementById('person-name').textContent,
+                                "old_description": old_edit_description,
+                                "new_description": $( "#edit-description" ).val(),
+                                "new_link": $( "#edit-link" ).val()})      
+        $.post( "/edit_item", data, 
+            function(data,status){
+                reloadPage(data)
+        });
+        
+        $( "#edit-form" ).dialog( "close" );
+    }
+    
+    function addNewItem() {
+        //alert("New Description is: " + $( "#add-description" ).val() + " and link is: " + $( "#add-link" ).val());
+        
+        // In order to use ajax, a callback function for reload needs to be specified
+//        $.ajax({
+//            type: "POST",
+//            url: "/add_item",
+//            dataType: 'json',
+//            data: JSON.stringify({ "person_name": document.getElementById('person-name').textContent,
+//                                   "new_description": $( "#add-description" ).val(),
+//                                   "new_link": $( "#add-link" ).val()})
+//        })        
+
+        data = JSON.stringify({ "person_name": document.getElementById('person-name').textContent,
+                                "new_description": $( "#add-description" ).val(),
+                                "new_link": $( "#add-link" ).val()})       
+        $.post( "/add_item", data, 
+            function(data,status){
+                reloadPage(data)
+        });    
+        
+        $( "#add-form" ).dialog( "close" );
+    }    
+    
+    function reloadPage(data){
+        document.location.reload();
     }
     
     function deleteItem() {
-      var valid = true;
-      return valid;
+        //alert("Deleting: " + $( "#edit-description" ).val());
+      
+        data = JSON.stringify({ "person_name": document.getElementById('person-name').textContent,
+                                "description": $( "#edit-description" ).val()})
+        $.post( "/delete_item", data, 
+            function(data,status){
+                reloadPage(data)
+        });   
+        
+        $( "#edit-form" ).dialog( "close" );
     }
 
     $( "#edit-form" ).dialog({
@@ -65,11 +110,13 @@ $(function() {
         "Save Item": saveItem,
         "Delete Item": deleteItem,
         Cancel: function() {
-          dialog.dialog( "close" );
+          $( "#edit-form" ).dialog( "close" );
         }
       },
       close: function() {
-
+         //location_var = $(location).attr('href');
+         //alert(location_var);
+         //window.location.replace(location_var);
       }
     });
     
@@ -79,20 +126,16 @@ $(function() {
       width: 500,
       modal: true,
       buttons: {
-        "Save Item": saveItem,
+        "Save Item": addNewItem,
         Cancel: function() {
-          dialog.dialog( "close" );
+          $( "#add-form" ).dialog( "close" );
         }
       },
       close: function() {
-//        form[ 0 ].reset();
+          //document.location.reload(true);
       }
     });
 
-//    form = dialog.find( "form" ).on( "submit", function( event ) {
-//      event.preventDefault();
- //     addUser();
- //   });
 
 
   });
