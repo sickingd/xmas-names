@@ -1,39 +1,70 @@
 <!DOCTYPE html>
 
+<html lang="en">
 <head>
-    <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
-</head>
+  <meta charset="utf-8">
+  <title>Christmas List</title>
 
-<script>
-function setbg(color)
-{
-document.getElementById("styled").style.background=color
-}
-</script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <link rel="stylesheet" href="/stylesheets/main.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <script type="text/javascript" src="scripts/ChristmasList.js"></script>
+
+ 
+
+</head>
 
 {% autoescape true %}
 <html>
   <body>
-
+  
     {% if found_person %}
         <div id="header">
         <h1>Christmas Lists for {{ person.name }}</h1>
         </div>
-
-        <div id="list">
+        
+        <div class="hidden-div">
+            <label id="person-name">{{ person.name }}</label>
+        </div>
+            
+        <div id="mylist" class="ui-widget">
         Your list:
-        <form action="/list?id={{ person.key.id() }}" method="post">
-          <textarea name="person_list" id="listbox">{{ person.list }}</textarea><br>
-          <input id="savebutton" type="submit" value="Save Changes">
-        </form>
+
+		  <table style="width:50%" class="ui-widget ui-widget-content">   
+		   {% for next_item in person.items %}
+				<tr id={{ next_item.id }}>
+					<td>{{ next_item.description }}</td>
+                    <td><a href={{ next_item.link }}>Link</a></td>
+					<td><button id="edit-item">Edit</button></td>
+				</tr>
+		  {% endfor %}
+		  </table>
+          <button id="add-item">Add New Item</button>
+
         </div>
 
-        <br>
+ 
         <br>
         {% for assigned_person in assigned_people %}
-            <div id="list">
+            <div id="assigned_list" class="ui-widget">
             {{ assigned_person.name }}'s list for the {{ assigned_person.family }} family gift exchange:<br>
-            <textarea id="listbox" disabled name="assigned_list">{{ assigned_person.list }}</textarea>
+			<table id={{ assigned_person.name }} style="width:50%" class="ui-widget ui-widget-content">   
+				<tr class="ui-widget-header ">
+					<th>Item</th>
+					<th> </th>
+					<th>Fulfilled</th>
+				</tr>			
+			   {% for next_assigned_item in assigned_person.items %}
+				<tr>
+					<td>{{ next_assigned_item.description }}</td>
+					<td><a href={{ next_assigned_item.link }}>Link</a></td>
+                    <!-- Couldn't figure out a great way to initialize the fulfilled itme correctly.
+                         So I added the value as the id and will process it in jquery after the page loads. -->
+					<td><div id={{ next_assigned_item.is_fulfilled }} class="toggle-button"><button></button></div>
+				</tr>
+			  {% endfor %}
+		    </table>
             </div>
             <br>
         {% endfor %}        
@@ -42,6 +73,33 @@ document.getElementById("styled").style.background=color
         No name found
 	{% endif %}    
     
+    <!-- Form for editing an existing item.  Only visible when Edit Item is selected -->
+    <div id="edit-form" title="Edit Item">
+      <form>
+        <fieldset>
+          <label for="edit-description">Description</label>
+          <input type="text" name="edit-description" id="edit-description" class="text ui-widget-content ui-corner-all">
+          <label for="edit-link">Link (Optional)</label>
+          <input type="text" name="edit-link" id="edit-link" class="text ui-widget-content ui-corner-all">
+    <!--      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">-->
+        </fieldset>
+      </form>
+    </div>
+
+    <!-- Form for creating a new item.  Only visible when Add New Item is selected -->
+    <div id="add-form" title="Add New Item">
+      <form>
+        <fieldset>
+          <label for="add-description">Description</label>
+          <input type="text" name="add-description" id="add-description" class="text ui-widget-content ui-corner-all">
+          <label for="add-link">Link (Optional)</label>
+          <input type="text" name="add-link" id="add-link" class="text ui-widget-content ui-corner-all">
+    <!--       <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">-->
+        </fieldset>
+      </form>
+    </div>
+    
   </body>
 </html>
 {% endautoescape %}
+ 

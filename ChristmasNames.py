@@ -12,13 +12,18 @@ import logging
 import copy
 
 import ChristmasLists
+import DebugTools
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
     extensions=['jinja2.ext.autoescape'])
 
-    
+
+class Item(ndb.Model):
+    description = ndb.StringProperty()
+    link = ndb.StringProperty()
+    is_fulfilled = ndb.BooleanProperty()
     
 class Person(ndb.Model):
     name = ndb.StringProperty()
@@ -31,6 +36,7 @@ class Person(ndb.Model):
     list = ndb.TextProperty()    
     list_updated = ndb.BooleanProperty()
     is_admin = ndb.BooleanProperty()
+    items = ndb.StructuredProperty(Item, repeated=True)
 
 def emailPerson(person):    
     name = person.name
@@ -261,4 +267,8 @@ application = webapp2.WSGIApplication([
 	('/send_email_person', SendEmailPerson),    
 	('/send_list_emails', ChristmasLists.SendListEmails),    
     ('/list', ChristmasLists.DisplayLists),
-], debug=True)
+    ('/generate_test_people', DebugTools.GenerateTestPeople),
+    ('/fulfilled', ChristmasLists.Fulfilled),
+    ('/edit_item', ChristmasLists.EditItem),
+    ('/add_item', ChristmasLists.AddItem),
+    ('/delete_item', ChristmasLists.DeleteItem),], debug=True)
