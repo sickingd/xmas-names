@@ -1,14 +1,24 @@
 body {
-    /*font-family: Verdana, Helvetica, sans-serif;*/
+    /*font-family: Verdana, Helvetica, sans-serif;
     background-color: #FFFFFF;
-    background-image: url("images/christmas_presents.jpg");
-    background-repeat: no-repeat;
-    background-size: 100%;
+    background-color: rgba(0, 0, 0, 0.5);*/
+    background-image: url("images/white-snow-background.jpg");
+    /*background-repeat: repeat;*/
+    /*background-size: 100%;*/
+    /*font-size: 62.5%;*/
 }
+
+
 
 #header {
     text-align:center;
     padding:5px;
+}
+
+h2 {
+    text-align:center;
+    padding:5px;
+/*    background-color: #FFFFFF;*/
 }
 
 #list {
@@ -32,7 +42,7 @@ textarea#listbox {
 
 #savebutton {
 }
-
+/*
 table, th, td {
     border: 1px solid gray;
     border-collapse: collapse;
@@ -42,7 +52,7 @@ table, th, td {
 th {
     font-weight: bold;
 }
-
+*/
 .hidden-div { 
     display: none;
 }
@@ -93,18 +103,57 @@ th {
 	box-shadow: 0 0 4px rgba(0,0,0,0.1); 
 }
 
+div#assigned_list,  div#mylist { 
+    margin: 20px 0; 
+    /*align-content: center;*/
+    padding-left: 20%;
+    padding-right: 20%;
+}
 
-    body { font-size: 62.5%; }
+div#assigned_list table, div#mylist table { 
+    margin: 0 auto; 
+    border-collapse: collapse; 
+    width: 100%; 
+}
 
-    label, input { display:block; }
+div#assigned_list table td, div#assigned_list table th, div#mylist table td, div#mylist table th{ 
+    border: 1px solid #eee; 
+    padding: .6em 10px; 
+    text-align: left; 
+}
 
-    input.text { margin-bottom:12px; width:95%; padding: .4em; }
+label, input { 
+    display:block; 
+}
 
-    fieldset { padding:0; border:0; margin-top:25px; }
+input.text { 
+    margin-bottom:12px; 
+    width:95%; 
+    padding: .3em; 
+}
 
-    div#users-contain { width: 350px; margin: 20px 0; }
+fieldset { 
+    padding:0; 
+    border:0; 
+    margin-top:15px; 
+}
 
-    div#users-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+th#fulfilled, th#link, th#action { 
+    width: 4em; 
+}
 
-    div#users-contain table td, div#users-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
+button#add-item {
+    text-align: center;
+}
 
+div#div-for-border { 
+ /*   border: 2px solid #CECECE; 
+    border-radius: 15px;
+    background-color: white;
+    opacity: 0.5;*/
+}
+
+.snowflake, .snowman {
+    height: 2em;
+    width: 2em;
+}
