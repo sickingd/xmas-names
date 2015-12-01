@@ -20,7 +20,7 @@
   <body>
   
     {% if found_person %}
-        <div id="header">
+        <div id="header" class="ui-widget">
         <h1>Christmas Lists for {{ person.name }}</h1>
         </div>
         
@@ -29,42 +29,71 @@
         </div>
             
         <div id="mylist" class="ui-widget">
-        Your list:
+        <div id="div-for-border">
+        <h2><img src="stylesheets/images/snowflake1.jpg" class="snowflake"> Your list <img src="stylesheets/images/snowflake1.jpg" class="snowflake"> </h2>
 
-		  <table style="width:50%" class="ui-widget ui-widget-content">   
-		   {% for next_item in person.items %}
-				<tr id={{ next_item.id }}>
-					<td>{{ next_item.description }}</td>
-                    <td><a href={{ next_item.link }}>Link</a></td>
-					<td><button id="edit-item">Edit</button></td>
-				</tr>
+		  <table class="ui-widget ui-widget-content">   
+				<thead class="ui-widget-header">
+                    <tr>
+                        <th>Item</th>
+                        <th id="link" >Link</th>
+                        <th id="action" >Action</th>
+                    </tr>		
+                </thead>
+          {% for next_item in person.items %}
+                <tbody class="ui-widget-content">
+                    <tr id={{ next_item.id }}>
+                        <td>{{ next_item.description }}</td>
+                        {% if next_item.link == "" %}
+                            <td></td>
+                        {% else %}
+                            <td><a href={{ next_item.link }}>Link</a></td>
+                        {% endif %}                    
+                        <td><button id="edit-item">Edit</button></td>
+                    </tr>
+                </tbody>
 		  {% endfor %}
 		  </table>
           <button id="add-item">Add New Item</button>
-
+        </div>
         </div>
 
  
         <br>
         {% for assigned_person in assigned_people %}
             <div id="assigned_list" class="ui-widget">
-            {{ assigned_person.name }}'s list for the {{ assigned_person.family }} family gift exchange:<br>
-			<table id={{ assigned_person.name }} style="width:50%" class="ui-widget ui-widget-content">   
-				<tr class="ui-widget-header ">
-					<th>Item</th>
-					<th> </th>
-					<th>Fulfilled</th>
-				</tr>			
+            <div id="div-for-border">
+            <h2>
+                <img src="stylesheets/images/snowman.jpg" class="snowman"> 
+                {{ assigned_person.name }}'s list for the {{ assigned_person.family }} family gift exchange
+                <img src="stylesheets/images/snowman.jpg" class="snowman">
+            </h2>
+            <br>
+			<table id={{ assigned_person.name }} class="ui-widget ui-widget-content">   
+				<thead class="ui-widget-header">
+                    <tr>
+                        <th>Item</th>
+                        <th id="link" >Link</th>
+                        <th id="fulfilled" >Fulfilled</th>
+                    </tr>		
+                </thead>
 			   {% for next_assigned_item in assigned_person.items %}
-				<tr>
-					<td>{{ next_assigned_item.description }}</td>
-					<td><a href={{ next_assigned_item.link }}>Link</a></td>
-                    <!-- Couldn't figure out a great way to initialize the fulfilled itme correctly.
-                         So I added the value as the id and will process it in jquery after the page loads. -->
-					<td><div id={{ next_assigned_item.is_fulfilled }} class="toggle-button"><button></button></div>
-				</tr>
+				<tbody class="ui-widget-content">
+                    <tr>
+                        <td>{{ next_assigned_item.description }}</td>
+                        {% if next_assigned_item.link == "" %}
+                            <td></td>
+                        {% else %}
+                            <td><a id="link" href={{ next_assigned_item.link }}>Link</a></td>
+                        {% endif %}
+                        <!-- Couldn't figure out a great way to initialize the fulfilled itme correctly.
+                             So I added the value as the id and will process it in jquery after the page loads. -->
+                        <td><div id={{ next_assigned_item.is_fulfilled }} class="toggle-button"><button></button></div>
+                    </tr>
+                </tbody>
 			  {% endfor %}
 		    </table>
+            </div>
             </div>
             <br>
         {% endfor %}        
