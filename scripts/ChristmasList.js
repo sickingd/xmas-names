@@ -7,6 +7,7 @@ $(function() {
         $('*[id*="True"]').each(function() {
             $(this).toggleClass("toggle-button-selected")
         });
+        
     });
     
     $(".toggle-button").click(function(){
@@ -103,8 +104,8 @@ $(function() {
 
     $( "#edit-form" ).dialog({
       autoOpen: false,
-      height: 300,
-      width: 500,
+      height: 350,
+      width: 700,
       modal: true,
       buttons: {
         "Save Item": saveItem,
@@ -122,8 +123,8 @@ $(function() {
     
     $( "#add-form" ).dialog({
       autoOpen: false,
-      height: 300,
-      width: 500,
+      height: 350,
+      width: 700,
       modal: true,
       buttons: {
         "Save Item": addNewItem,
