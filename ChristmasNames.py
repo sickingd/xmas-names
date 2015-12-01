@@ -228,16 +228,18 @@ class AddName(webapp2.RequestHandler):
         person.is_assigned = False        
         person.is_admin = False   
         person.put()
+        
+        self.redirect("/")
 
-        all_names = Person.query().fetch(1000)            
-        template_values = {
-            'added_name': person.name,
-            'name_added': True,
-            'all_names': all_names,
-        }
+        # all_names = Person.query().fetch(1000)            
+        # template_values = {
+            # 'added_name': person.name,
+            # 'name_added': True,
+            # 'all_names': all_names,
+        # }
 
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))
+        # template = JINJA_ENVIRONMENT.get_template('index.html')
+        # self.response.write(template.render(template_values))
 
 
 
