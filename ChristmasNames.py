@@ -51,8 +51,10 @@ def emailPerson(person):
     if not person.is_assigned:
         return
 
-    message = mail.EmailMessage(sender="sickingd@gmail.com",
-                                subject="Christmas Names 2014")
+    subject_string = person.family + " Family Christmas Exchange"
+    logging.info(subject_string)
+    message = mail.EmailMessage(sender="sickingd@gmail.com", 
+                                subject=subject_string)
 
     message.to = email
         
@@ -61,16 +63,23 @@ Dear """ + name + """,
 
 Here is the name you have picked for the """ + person.family + """ gift exchange:
 
-""" + person.assigned_name + """
+    """ + person.assigned_name + """
 
-The people in charge have decided on a $50 limit per person, so please try to stay in that range.
+Feel free to use your personal site to help provide and receive gift ideas:
+
+    xmas-xchange.com/list?id=""" + str(person.key.id()) + """
+
+The top section is for you to add items to your Christmas wish list.  The bottom section contains the wish list of the person you have selected.  If you end up purchasing an item from your selected person's wish list, please check the "fulfilled" box.  That will ensure someone else doesn't also purchase that same item. 
+ 
+The people in charge have decided on a $50-$75 limit per person, so please try to stay in that range.
 
 Let me know if you have any questions.  Merry Christmas!
 
 Danny
 
+p.s. This is an automated email, I don't know who you selected :-)
 """
-    
+    logging.info(message.body)
     message.send()
             
     
@@ -81,15 +90,17 @@ class SendEmailPerson(webapp2.RequestHandler):
         people = Person.query(Person.name == self.request.get('email_person')).fetch(1000)
         for person in people:
             emailPerson(person)
+            
+        self.redirect("/")
            
-        all_names = Person.query().fetch(1000)
+        # all_names = Person.query().fetch(1000)
 
-        template_values = {
-            'emails_person_sent': True,
-            'all_names': all_names,
-        }
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))    
+        # template_values = {
+            # 'emails_person_sent': True,
+            # 'all_names': all_names,
+        # }
+        # template = JINJA_ENVIRONMENT.get_template('index.html')
+        # self.response.write(template.render(template_values))    
         
 class SendEmail(webapp2.RequestHandler):
 
@@ -100,16 +111,31 @@ class SendEmail(webapp2.RequestHandler):
         for person in people:
             emailPerson(person)
             
+        self.redirect("/")
+            
+        # all_names = Person.query().fetch(1000)
+
+        # template_values = {
+            # 'emails_sent': True,
+            # 'all_names': all_names,
+        # }
+        # template = JINJA_ENVIRONMENT.get_template('index.html')
+        # self.response.write(template.render(template_values))    
+
+class ResetAssignments(webapp2.RequestHandler):
+
+    def post(self):
+    
         all_names = Person.query().fetch(1000)
-
-        template_values = {
-            'emails_sent': True,
-            'all_names': all_names,
-        }
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))    
-
-
+        for person in all_names:
+            person.assigned_name_key = None
+            person.assigned_name = ""
+            person.is_assigned = False
+            person.put()
+            
+        self.redirect("/")
+        
+        
 def assignNames(familyName):
 
     count = 0
@@ -248,16 +274,18 @@ class Assign(webapp2.RequestHandler):
     def post(self):
         family_assign = self.request.get('family_assign')
         family_names = assignNames(family_assign)
-        all_names = Person.query().fetch(1000)            
+        
+        self.redirect("/")
+        # all_names = Person.query().fetch(1000)            
 
-        template_values = {
-            'family_names': family_names,
-            'assigned_names': True,
-            'family_assign': family_assign,
-            'all_names': all_names,
-        }
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))       
+        # template_values = {
+            # 'family_names': family_names,
+            # 'assigned_names': True,
+            # 'family_assign': family_assign,
+            # 'all_names': all_names,
+        # }
+        # template = JINJA_ENVIRONMENT.get_template('index.html')
+        # self.response.write(template.render(template_values))       
 
 
 application = webapp2.WSGIApplication([
@@ -265,7 +293,8 @@ application = webapp2.WSGIApplication([
     ('/find', FindNames),
 	('/add_name', AddName),
 	('/assign', Assign),
-	('/send_email', SendEmail),    
+	('/reset_assignments', ResetAssignments),
+    ('/send_email', SendEmail),    
 	('/send_email_person', SendEmailPerson),    
 	('/send_list_emails', ChristmasLists.SendListEmails),    
     ('/list', ChristmasLists.DisplayLists),

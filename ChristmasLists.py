@@ -145,7 +145,7 @@ Dear """ + person.name + """,
 
 To help communicate your Christmas wish list to the person who chose your name, you can use the following link.
 
-www.sickingd-xmas-2014.appspot.com/list?id=""" + str(person.key.id()) + """
+xmas-xchange.com/list?id=""" + str(person.key.id()) + """
 
 The top section is where you write in any items that you want for Christmas.  The bottom section contains the list of the people you have selected.
 

@@ -11,7 +11,7 @@
   <h1>Welcome to the Christmas name selection site!</h1>
   </div>
 
-
+<!--
   <form action="/generate_test_people" method="post">
     <input name="generate_test_people">
     <input type="submit" value="Generate Test People">
@@ -131,11 +131,16 @@
     <input type="submit" value="Send List Emails">
   </form>  
   
+    <br>
+  <form action="/reset_assignments" method="post">
+    <input type="submit" value="Reset Assignments">
+  </form>   
+  
   {% if list_emails_sent %}
    <h3>List emails sent:</h3><br>
    {{ all_list_email_messages }}
   {% endif %}  
-
+-->
   </body>
 </html>
 {% endautoescape %}
