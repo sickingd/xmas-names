@@ -135,57 +135,5 @@ class DeleteItem(webapp2.RequestHandler):
             logging.info("""Person """ + person.name + """ is removing """ + description)
             person.put()                 
     
-def emailPerson(person):    
-        
-    message = mail.EmailMessage(sender="sickingd@gmail.com", subject="Christmas Lists")
-    message.to = person.email
-        
-    message.body = """
-Dear """ + person.name + """,
-
-To help communicate your Christmas wish list to the person who chose your name, you can use the following link.
-
-xmas-xchange.com/list?id=""" + str(person.key.id()) + """
-
-The top section is where you write in any items that you want for Christmas.  The bottom section contains the list of the people you have selected.
-
-Please let me know if it's not working as expected.  
-
-Danny
-
-"""
-
-    #Debugging hack
-    #if person.name == 'Danny Sicking':
-    message.send()
-        
-    return message.body
-
-    
-class SendListEmails(webapp2.RequestHandler):
-
-    def post(self):
-    
-        all_names = ChristmasNames.Person.query().fetch(1000)
-        emailed = set()
-        emails_sent = False
-        all_messages = ''
-        for person in all_names:
-            if person.is_assigned and person.name not in emailed:
-                all_messages = all_messages + emailPerson(person)
-                emailed.add(person.name)
-                emails_sent = True
-
-        all_names = ChristmasNames.Person.query().fetch(1000)            
-
-        template_values = {
-            'list_emails_sent': emails_sent,
-            'all_list_email_messages': all_messages,
-            'all_names': all_names,
-        }
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))           
-        
-
 
         

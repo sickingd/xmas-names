@@ -1,18 +1,16 @@
 import os
 import urllib
 
-from google.appengine.api import users
 from google.appengine.ext import ndb
-from google.appengine.api import mail
 
 import jinja2
 import webapp2
-import random
 import logging
 import copy
 
-import ChristmasLists
+import Lists
 import DebugTools
+import Admin
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -30,7 +28,7 @@ class Person(ndb.Model):
     family = ndb.StringProperty()
     email = ndb.StringProperty()
     is_assigned = ndb.BooleanProperty()
-    exclude = ndb.StringProperty()
+    exclude = ndb.StringProperty(repeated=True)
     assigned_name_key = ndb.KeyProperty()
     assigned_name = ndb.StringProperty()
     list = ndb.TextProperty()    
@@ -38,164 +36,6 @@ class Person(ndb.Model):
     is_admin = ndb.BooleanProperty()
     items = ndb.StructuredProperty(Item, repeated=True)
 
-def emailPerson(person):    
-    name = person.name
-    email = person.email
-
-    if name == "":
-        return
-
-    if email == "":
-        return
-        
-    if not person.is_assigned:
-        return
-
-    subject_string = person.family + " Family Christmas Exchange"
-    logging.info(subject_string)
-    message = mail.EmailMessage(sender="sickingd@gmail.com", 
-                                subject=subject_string)
-
-    message.to = email
-        
-    message.body = """
-Dear """ + name + """,
-
-Here is the name you have picked for the """ + person.family + """ gift exchange:
-
-    """ + person.assigned_name + """
-
-Feel free to use your personal site to help provide and receive gift ideas:
-
-    xmas-xchange.com/list?id=""" + str(person.key.id()) + """
-
-The top section is for you to add items to your Christmas wish list.  The bottom section contains the wish list of the person you have selected.  If you end up purchasing an item from your selected person's wish list, please check the "fulfilled" box.  That will ensure someone else doesn't also purchase that same item. 
- 
-The people in charge have decided on a $50-$75 limit per person, so please try to stay in that range.
-
-Let me know if you have any questions.  Merry Christmas!
-
-Danny
-
-p.s. This is an automated email, I don't know who you selected :-)
-"""
-    logging.info(message.body)
-    message.send()
-            
-    
-class SendEmailPerson(webapp2.RequestHandler):
-
-    def post(self):
-    
-        people = Person.query(Person.name == self.request.get('email_person')).fetch(1000)
-        for person in people:
-            emailPerson(person)
-            
-        self.redirect("/")
-           
-        # all_names = Person.query().fetch(1000)
-
-        # template_values = {
-            # 'emails_person_sent': True,
-            # 'all_names': all_names,
-        # }
-        # template = JINJA_ENVIRONMENT.get_template('index.html')
-        # self.response.write(template.render(template_values))    
-        
-class SendEmail(webapp2.RequestHandler):
-
-    def post(self):
-    
-        people = Person.query(Person.family == self.request.get('email_family')).fetch(1000)
-        
-        for person in people:
-            emailPerson(person)
-            
-        self.redirect("/")
-            
-        # all_names = Person.query().fetch(1000)
-
-        # template_values = {
-            # 'emails_sent': True,
-            # 'all_names': all_names,
-        # }
-        # template = JINJA_ENVIRONMENT.get_template('index.html')
-        # self.response.write(template.render(template_values))    
-
-class ResetAssignments(webapp2.RequestHandler):
-
-    def post(self):
-    
-        all_names = Person.query().fetch(1000)
-        for person in all_names:
-            person.assigned_name_key = None
-            person.assigned_name = ""
-            person.is_assigned = False
-            person.put()
-            
-        self.redirect("/")
-        
-        
-def assignNames(familyName):
-
-    count = 0
-    familyPeople = Person.query(Person.family == familyName).fetch(1000)
-    
-    # Reset the flag
-    for person in familyPeople:
-        person.is_assigned = False
-        person.put()
-                
-    maxTries = len(familyPeople) * len(familyPeople) * len(familyPeople)
-    logging.info('Max tries is %i', maxTries)
-    
-    #maxTries = 10000
-    while True:
-        fromPeople = copy.deepcopy(familyPeople)
-        toPeople = copy.deepcopy(familyPeople)
-
-        for fromPerson in fromPeople:
-            logging.info('%i: From Person %s - ID: %d', count, fromPerson.name, fromPerson.key.id())
-            
-            index = random.randint(0, len(toPeople) - 1)
-            toPerson = toPeople[index]
-            logging.info('%i: To Person %s - ID: %d', count, toPerson.name, toPerson.key.id())
-
-            if fromPerson.is_assigned:
-                logging.info('%i: Already assigned to %s', count, fromPerson.assigned_name)
-                continue
-
-            # Cannot pick yourself
-            if fromPerson.key.id() == toPerson.key.id():
-                logging.info('%i: same person', count)
-                continue
-
-            # Exclude the exclusions
-            #TODO 
-            if fromPerson.exclude == toPerson.name:
-                logging.info('%i: Excluded person is %s, same as %s', count, fromPerson.exclude, toPerson.name)
-                continue
-            logging.info('%i: Excluded person is %s, not %s', count, fromPerson.exclude, toPerson.name)
-
-            fromPerson.assigned_name_key = toPerson.key
-            fromPerson.assigned_name = toPerson.name
-            fromPerson.is_assigned = True
-            #TODO: Store IDS instead of names for assigned_name
-            logging.info('%i: %s selected %s', count, fromPerson.name, toPerson.name)
-            del toPeople[index]
-                    
-        if len(toPeople) is 0:
-            for fromPerson in fromPeople:
-                fromPerson.put()
-            return fromPeople
-            
-        # Try to enforce some limit on number of tries
-        count = count + 1
-        if count > maxTries:
-            return []
-            
-        
-    
     
 class MainPage(webapp2.RequestHandler):
 
@@ -214,92 +54,20 @@ class MainPage(webapp2.RequestHandler):
 
         template = JINJA_ENVIRONMENT.get_template('index.html')
         self.response.write(template.render(template_values))
-	
-   
-class FindNames(webapp2.RequestHandler):
-
-    def post(self):
-        found_names = Person.query(Person.name == self.request.get('find_name')).fetch(20)
-        all_names = Person.query().fetch(1000)            
-        template_values = {
-            'found_names': found_names,
-            'find_a_name': True,
-            'all_names': all_names,
-        }
-
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))        
-
-    def get(self):
-        found_names = Person.query(Person.name == self.request.get('find_name')).fetch(20)
-        all_names = Person.query().fetch(1000)            
-        template_values = {
-            'found_names': found_names,
-            'find_a_name': True,
-            'all_names': all_names,
-        }
-
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.write(template.render(template_values))        
-		
-		
-class AddName(webapp2.RequestHandler):
-
-    def post(self):
-        person = Person()
-        person.email = self.request.get('email')
-        person.name = self.request.get('name')
-        person.family = self.request.get('family')
-        person.exclude = self.request.get('single_exclude')
-        person.is_assigned = False        
-        person.is_admin = False   
-        person.put()
-        
-        self.redirect("/")
-
-        # all_names = Person.query().fetch(1000)            
-        # template_values = {
-            # 'added_name': person.name,
-            # 'name_added': True,
-            # 'all_names': all_names,
-        # }
-
-        # template = JINJA_ENVIRONMENT.get_template('index.html')
-        # self.response.write(template.render(template_values))
-
-
-
-class Assign(webapp2.RequestHandler):
-
-    def post(self):
-        family_assign = self.request.get('family_assign')
-        family_names = assignNames(family_assign)
-        
-        self.redirect("/")
-        # all_names = Person.query().fetch(1000)            
-
-        # template_values = {
-            # 'family_names': family_names,
-            # 'assigned_names': True,
-            # 'family_assign': family_assign,
-            # 'all_names': all_names,
-        # }
-        # template = JINJA_ENVIRONMENT.get_template('index.html')
-        # self.response.write(template.render(template_values))       
 
 
 application = webapp2.WSGIApplication([
     ('/', MainPage),
-    ('/find', FindNames),
-	('/add_name', AddName),
-	('/assign', Assign),
-	('/reset_assignments', ResetAssignments),
-    ('/send_email', SendEmail),    
-	('/send_email_person', SendEmailPerson),    
-	('/send_list_emails', ChristmasLists.SendListEmails),    
-    ('/list', ChristmasLists.DisplayLists),
-    ('/generate_test_people', DebugTools.GenerateTestPeople),
-    ('/fulfilled', ChristmasLists.Fulfilled),
-    ('/edit_item', ChristmasLists.EditItem),
-    ('/add_item', ChristmasLists.AddItem),
-    ('/delete_item', ChristmasLists.DeleteItem),], debug=True)
+    ('/admin', Admin.AdminPage),
+    ('/find', Admin.FindNames),
+	('/add_name', Admin.AddName),
+	('/assign', Admin.Assign),
+	('/reset_assignments', Admin.ResetAssignments),
+    ('/send_email', Admin.SendEmail),    
+	('/send_email_person', Admin.SendEmailPerson),    
+    ('/list', Lists.DisplayLists),  
+    ('/fulfilled', Lists.Fulfilled),
+    ('/edit_item', Lists.EditItem),
+    ('/add_item', Lists.AddItem),
+    ('/delete_item', Lists.DeleteItem),
+    ('/generate_test_people', DebugTools.GenerateTestPeople),], debug=True)
