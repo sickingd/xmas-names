@@ -22,7 +22,7 @@
   <h1>Welcome to the Christmas name selection site!</h1>
   </div>
 
-<!--
+
   <form action="/generate_test_people" method="post">
     <input name="generate_test_people">
     <input type="submit" value="Generate Test People">
@@ -88,8 +88,8 @@
 	Family:
 	<input type="text" name="family">
     <br>
-	Exclude:
-	<input type="text" name="single_exclude">
+	Exclude: (Separate multiples with comma)
+	<input type="text" name="exclude">
 	<input type="submit" value="Add">
   </form>
 
@@ -137,10 +137,6 @@
    <h3>Email sent successfully.</h3>
   {% endif %}  
   
-  <br>
-  <form action="/send_list_emails" method="post">
-    <input type="submit" value="Send List Emails">
-  </form>  
   
     <br>
   <form action="/reset_assignments" method="post">
@@ -151,7 +147,7 @@
    <h3>List emails sent:</h3><br>
    {{ all_list_email_messages }}
   {% endif %}  
--->
+
   </body>
 </html>
 {% endautoescape %}
