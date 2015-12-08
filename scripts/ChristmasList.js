@@ -45,6 +45,7 @@ $(function() {
         $( "#add-link" ).val("");
         $( "#add-form" ).dialog( "open" );
     });
+    
       
     function saveItem() {
         //alert("New Description is: " + $( "#edit-description" ).val() + " and link is: " + $( "#edit-link" ).val());
@@ -104,8 +105,9 @@ $(function() {
 
     $( "#edit-form" ).dialog({
       autoOpen: false,
-      height: 350,
-      width: 700,
+      height: 'auto',
+      width: 'auto',
+      fluid: true,
       modal: true,
       buttons: {
         "Save Item": saveItem,
@@ -123,8 +125,9 @@ $(function() {
     
     $( "#add-form" ).dialog({
       autoOpen: false,
-      height: 350,
-      width: 700,
+      height: 'auto',
+      width: 'auto',
+      fluid: true,
       modal: true,
       buttons: {
         "Save Item": addNewItem,
@@ -136,6 +139,36 @@ $(function() {
           //document.location.reload(true);
       }
     });
+    
+    // catch dialog if opened within a viewport smaller than the dialog width
+    $(document).on("dialogopen", ".ui-dialog", function (event, ui) {
+        fluidDialog();
+    });
+    
+    // Credit to: http://stackoverflow.com/questions/16471890
+    function fluidDialog() {
+        var $visible = $(".ui-dialog:visible");
+        // each open dialog
+        $visible.each(function () {
+            var $this = $(this);
+            var dialog = $this.find(".ui-dialog-content").data("ui-dialog");
+            // if fluid option == true
+            if (dialog.options.fluid) {
+                var wWidth = $(window).width();
+                // check window width against dialog width
+                if (wWidth > 786)  {
+                    // 700px is the max needed
+                    $this.css("width", "700px");
+                } else {
+                    // For responsive design, max out at 90% for smaller width devices
+                    $this.css("width", "90%");
+                }
+                //reposition dialog
+                dialog.option("position", dialog.options.position);
+            }
+        });
+
+    }
 
 
 

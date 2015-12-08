@@ -1,0 +1,9 @@
+body {
+    font-size: 80%; 
+}
+
+
+div#assigned_list,  div#mylist { 
+    padding-left: 0%;
+    padding-right: 0%;
+}
