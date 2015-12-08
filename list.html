@@ -2,11 +2,13 @@
 
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <!-- <meta charset="utf-8"> -->
+  <meta charset="utf-8" name=viewport content="width=device-width, initial-scale=1">
   <title>Christmas List</title>
 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <link rel="stylesheet" href="/stylesheets/main.css">
+  <link rel="stylesheet" type="text/css" media="screen and (max-device-width: 768px)" href="/stylesheets/mobile.css" />
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <script type="text/javascript" src="scripts/ChristmasList.js"></script>
@@ -39,8 +41,19 @@
             
         <div id="mylist" class="ui-widget">
         <div id="div-for-border">
-        <h2><img src="stylesheets/images/snowflake.png" class="snowflake"> Your List <img src="stylesheets/images/snowflake.png" class="snowflake"> </h2>
-
+        <div id="h2-table">
+            <div id="h2-div">
+                <div id="left-h2-icon"> 
+                    <img src="stylesheets/images/snowflake.png" class="snowflake">
+                </div>
+                <div id="middle-h2-text"> 
+                    <h2>Your List</h2>
+                </div>
+                <div id="right-h2-icon"> 
+                    <img src="stylesheets/images/snowflake.png" class="snowflake">
+                </div>
+            </div>
+        </div>        
 		  <table class="ui-widget ui-widget-content">   
 				<thead class="ui-widget-header">
                     <tr>
@@ -72,11 +85,20 @@
         {% for assigned_person in assigned_people %}
             <div id="assigned_list" class="ui-widget">
             <div id="div-for-border">
-            <h2>
-                <img src="stylesheets/images/snowman.png" class="snowman"> 
-                {{ assigned_person.name }}'s List for the {{ assigned_person.family }} Family Gift Exchange
-                <img src="stylesheets/images/snowman.png" class="snowman">
-            </h2>
+            
+            <div id="h2-table">
+                <div id="h2-div">
+                    <div id="left-h2-icon"> 
+                        <img src="stylesheets/images/snowman.png" class="snowman"> 
+                    </div>
+                    <div id="middle-h2-text"> 
+                        <h2>{{ assigned_person.name }}'s List for the {{ assigned_person.family }} Family Gift Exchange</h2>
+                    </div>
+                    <div id="right-h2-icon"> 
+                        <img src="stylesheets/images/snowman.png" class="snowman"> 
+                    </div>
+                </div>
+            </div>
             <br>
 			<table id={{ assigned_person.name }} class="ui-widget ui-widget-content">   
 				<thead class="ui-widget-header">

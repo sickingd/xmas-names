@@ -154,6 +154,30 @@ div#div-for-border {
 }
 
 .snowflake, .snowman {
-    height: 2em;
-    width: 2em;
+    height: 4em;
+    width: 4em;
 }
+
+div#h2-table {
+    width: 100%;
+    display: table;
+}
+
+div#h2-div {
+    display: table-row;
+}
+
+div#middle-h2-text {
+    display: table-cell;
+}
+
+div#left-h2-icon {
+    display: table-cell;
+    text-align: left;
+}
+
+div#right-h2-icon {
+    display: table-cell;
+    text-align: right;
+}
+
