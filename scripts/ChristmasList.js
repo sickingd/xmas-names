@@ -20,7 +20,8 @@ $(function() {
         }
         description = $(this).closest("tr").find('td:eq(0)').text();
         person_name = document.getElementById('person-name').textContent;
-        assigned_person_name = $(this).closest('table').attr('id');
+        assigned_person_name = $(this).closest('table').data("assignedname");
+        
        
         $.ajax({
             type: "POST",

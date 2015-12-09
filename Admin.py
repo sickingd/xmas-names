@@ -122,37 +122,47 @@ def assignNames(familyName):
         for fromPerson in fromPeople:
             logging.info('%i: From Person %s - ID: %d', count, fromPerson.name, fromPerson.key.id())
             
-            index = random.randint(0, len(toPeople) - 1)
-            toPerson = toPeople[index]
-            logging.info('%i: To Person %s - ID: %d', count, toPerson.name, toPerson.key.id())
-
-            if fromPerson.is_assigned:
-                logging.info('%i: Already assigned to %s', count, fromPerson.assigned_name)
-                continue
-
-            # Cannot pick yourself
-            if fromPerson.key.id() == toPerson.key.id():
-                logging.info('%i: same person', count)
-                continue
-
-            # Exclude the exclusions
-            foundExcludedPerson = False
+            # Set up a set of excluded people for fast lookup later
+            excludedPeople = set()
             for excludePerson in fromPerson.exclude:
-                logging.info('%i: Processing exclude person - %s', count, excludePerson)
-                if excludePerson == toPerson.name:
-                    logging.info('%i: Excluded person match', count)
-                    foundExcludedPerson = True
-                    break
+                excludedPeople.add(excludePerson)
+            
+            # Allow the person to pick multiple names before giving up, this number could be made
+            # a bit bigger because it's faster to pick a few more times here than it is to start over.
+            toPersonTries = len(toPeople)
+            toPersonCount = 0
+            foundMatch = False
+            while toPersonCount < toPersonTries:
+                toPersonCount = toPersonCount + 1
+                index = random.randint(0, len(toPeople) - 1)
+                toPerson = toPeople[index]
+                logging.info('%i:%i To Person %s - ID: %d', count, toPersonCount, toPerson.name, toPerson.key.id())
 
-            if foundExcludedPerson:
+                # Not really sure why this is even a check, as I don't think it's possible
+                if fromPerson.is_assigned:
+                    logging.info('%i:%i Already assigned to %s', count, toPersonCount, fromPerson.assigned_name)
+                    continue
+
+                # Cannot pick yourself
+                if fromPerson.key.id() == toPerson.key.id():
+                    logging.info('%i:%i same person', count, toPersonCount)
+                    continue
+
+                # Exclude the exclusions
+                if toPerson.name in excludedPeople:
+                    logging.info('%i:%i Excluded person match', count, toPersonCount)
+                    continue;
+
+                foundMatch = True
+                break;
+
+            if not foundMatch:
+                logging.info('%i: Did not find a match', count)
                 continue;
-
-            logging.info('%i: %s is not an excluded person', count, toPerson.name)
 
             fromPerson.assigned_name_key = toPerson.key
             fromPerson.assigned_name = toPerson.name
             fromPerson.is_assigned = True
-            #TODO: Store IDS instead of names for assigned_name
             logging.info('%i: %s selected %s', count, fromPerson.name, toPerson.name)
             del toPeople[index]
                     

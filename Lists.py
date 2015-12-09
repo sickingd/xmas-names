@@ -76,11 +76,18 @@ class Fulfilled(webapp2.RequestHandler):
         description = data['description']
         assigned_person_name = data['assigned_person_name']
         assigned_people = ChristmasNames.Person.query(ChristmasNames.Person.name == assigned_person_name).fetch(1000)
+        logging.info("""Fulfilled: Assigned person name is """ + assigned_person_name + """ and the number of people found are: """ + str(len(assigned_people)))
         for person in assigned_people:
+            logging.info("""Fulfilled: Number of items: """ + str(len(person.items)))
             for item in person.items:
+                logging.info("""Fulfilled: Checking to see if """ + item.description + """=""" + description)
                 if item.description == description:
                     item.is_fulfilled = (fulfilled == "True")
+                    logging.info("""Fulfilled: They match!""")
                     logging.info("""Person """ + person.name + """ is changing description """ + description + """ to """ + fulfilled)
+                else:
+                    logging.info("""Fulfilled: They did NOT match""")
+                    
             person.put()
             
             
